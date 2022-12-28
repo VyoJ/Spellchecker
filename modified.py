@@ -5,26 +5,12 @@ from string import ascii_lowercase as letters
 def words(text): 
     return re.findall(r'\w+', text.lower())
 
-WORDS = Counter(words(open('big.txt').read()))
-
-def P(word, N=sum(WORDS.values())): 
-    "Probability of `word`."
-    return WORDS[word] / N
-
-def correction(word): 
-    "Most probable spelling correction for word."
-    return max(candidates(word), key=P)
-
-def candidates(word): 
-    "Generate possible spelling corrections for word."
-    return (known([word]) or known(edits1(word)) or known(edits2(word)) or [word])
-
 def known(words):
-    "The subset of `words` that appear in the dictionary of WORDS."
-    return set(w for w in words if w in WORDS)
+    "The subset of `words` that appear in the dictionary of word_ct."
+    return set(w for w in words if w in word_ct)
 
 def edits1(word):
-    "All edits that are one edit away from `word`."
+    "All edits that are one edit away from the word."
     splits = [(word[:i], word[i:]) for i in range(len(word) + 1)]
     deletes = [L + R[1:] for L, R in splits if R]
     transposes = [L + R[1] + R[0] + R[2:] for L, R in splits if len(R)>1]
@@ -33,7 +19,37 @@ def edits1(word):
     return set(deletes + transposes + replaces + inserts)
 
 def edits2(word): 
-    "All edits that are two edits away from `word`."
+    "All edits that are two edits away from word."
     return (e2 for e1 in edits1(word) for e2 in edits1(e1))
 
-print(correction('helo'))
+def candidates(word): 
+    "Generate possible spelling corrections for word."
+    return (known([word]) or known(edits1(word)) or known(edits2(word)) or [word])
+
+def P(word): 
+    "Probability of the word appearing in big.txt"
+    N = sum(word_ct.values())
+    return word_ct[word] / N
+
+def correction(word, type): 
+    "Most probable spelling correction for word."
+    if type == 'mp':
+        return max(candidates(word), key = P)
+    elif type == 'all':
+        return sorted(candidates(word), key=P)
+
+#main
+word_ct = Counter(words(open('big.txt').read()))
+txt = input("Enter text: ").split()
+
+print("Most probable corrections:")
+for i in txt:
+    print(correction(i, 'mp'), end = " ")
+print()
+
+print("All possibilites of corrections:")
+for i in txt:
+    if correction(i, 'mp') == i:
+        print(i, end = " ")
+    else:
+        print(correction(i, 'all'), end = " ")
