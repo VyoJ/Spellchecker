@@ -4,17 +4,6 @@ import re
 from collections import Counter
 from string import ascii_lowercase as letters
 
-
-
-# def words(text): 
-#     return re.findall(r'\w+', text.lower())
-
-# def known(words):
-#     "The subset of `words` that appear in the dictionary of word_ct."
-#     #print(words(open(r'C:\Users\shamb\The codes\college\big.txt').read()))
-#     Counter(words(open(r'C:\Users\shamb\The codes\college\big.txt').read())))
-
-#     return set(w for w in words if w in word_ct)
 def words(text): 
     return re.findall(r'\w+', text.lower())
 
@@ -42,7 +31,6 @@ def candidates(word):
 
 def P(word): 
     "Probability of the word appearing in big.txt"
-    # word_ct = Counter(words(open(r'C:\Users\shamb\The codes\college\big.txt').read()))
     global word_ct
     N = sum(word_ct.values())
     return word_ct[word] / N
@@ -54,13 +42,8 @@ def correction(word, type):
     elif type == 'all':
         return sorted(candidates(word), key=P)
 
-
-word_ct = Counter(words(open(r'C:\Users\shamb\The codes\college\big.txt').read()))
-
 def main(txt):
     global word_ct
-    print(word_ct)
-#txt = input("Enter text: ").split()
 
     print("Most probable corrections:")
     for i in txt:
@@ -74,13 +57,12 @@ def main(txt):
             print(i, end = " ")
         else:
             correct_list.append(correction(i, 'all'))
+    print(correct_list)
     return correct_list
 
 def text_spellcheck():
     if text.get(1.0,'end-1c') is not None:
         name = text.get(1.0,'end-1c')
-        #label = tk.Label(win,text = name)
-        print(name)
         suggestion = main(name.split())
         label = tk.Label(win, text = suggestion)
         out = tk.Text(win,height = 30, width = 40)
@@ -88,17 +70,16 @@ def text_spellcheck():
     else:
         pass
         
-
 def reset():
     return 1
+
+word_ct = Counter(words(open('big.txt').read()))
 
 win = tk.Tk()
 win.geometry('1000x1000')
 
 text = tk.Text(win, height = 30, width = 40)
 text.grid(column=1,row=40)
- 
-
 
 button_check = tk.Button(win,bg = '#ADD8E6',command=text_spellcheck,text = 'Submit')
 button_reset = tk.Button(win,bg = '#ADD8E6',command=reset,text = 'Reset')
